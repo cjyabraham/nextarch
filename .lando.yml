@@ -1,0 +1,32 @@
+name: lf-projects
+recipe: pantheon
+config:
+  framework: wordpress
+  site: lf-projects
+  id: 8d5fdd23-f795-45ac-b83b-cc9d12e512b0
+services:
+  appserver:
+    run:
+      - /app/vendor/bin/phpcs --config-set installed_paths /app/vendor/wp-coding-standards/wpcs
+      - /app/vendor/bin/phpcs -i
+tooling:
+  phpcs:
+    service: appserver
+    cmd: /app/vendor/bin/phpcs
+    description: 'Run PHPCS commands'
+  phpcbf:
+    service: appserver
+    cmd: /app/vendor/bin/phpcbf
+    description: 'Run PHPCBF commands'
+  sniff:
+    service: appserver
+    cmd: /app/vendor/bin/phpcs -n -s --ignore="*/build/*,*/dist/*,*/node_modules/*,*gulpfile*,*/uploads/*,*/plugins/*,*/scripts/*,*/vendor/*,*pantheon*,/build/globals.js" -d memory_limit=1024M --standard="WordPress" /app/web/wp-content/themes/
+    description: 'Run the recommended code sniffs'
+  fix:
+    service: appserver
+    cmd: /app/vendor/bin/phpcbf -n -s --ignore="*/build/*,*/dist/*,*/node_modules/*,*gulpfile*,*/uploads/*,*/plugins/*,*/scripts/*,*/vendor/*,*pantheon*,/build/globals.js" -d memory_limit=1024M --standard="WordPress" /app/web/wp-content/themes/
+    description: 'Run the recommended code sniffs and fix'
+  debug:
+    service: appserver
+    cmd: 'touch /app/web/wp-content/debug.log && tail -f /app/web/wp-content/debug.log'
+    description: 'Get real-time WP debug log output'
